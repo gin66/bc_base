@@ -24,7 +24,7 @@ RUN pip install six requests websocket-client requests-futures
 RUN apk add python3
 RUN (curl https://bootstrap.pypa.io/get-pip.py | python3.5)
 RUN pip3.5 install --upgrade pip
-RUN pip3.5 install six requests websocket-client requests-futures
+RUN pip3.5 install six requests websocket-client requests-futures pusherclient
 
 #RUN apk add openjdk8-jre-base-8.92.14-r0
 RUN /usr/sbin/adduser -u 1000 -D jochen
