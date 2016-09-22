@@ -13,7 +13,7 @@ RUN apk update
 RUN apk upgrade
 RUN apk add curl tmux nodejs git fish vim bash
 RUN pip install --upgrade pip
-RUN pip install six requests websocket-client requests-futures pusherclient
+RUN pip install six requests websocket-client requests-futures pusherclient socketio_client
 
 #RUN apk add openjdk8-jre-base-8.92.14-r0
 RUN /usr/sbin/adduser -u 1000 -D jochen
