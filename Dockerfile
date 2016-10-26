@@ -11,7 +11,7 @@
 FROM python:3.5.2-alpine
 RUN apk update
 RUN apk upgrade
-RUN apk add curl tmux nodejs git fish vim bash
+RUN apk add curl tmux nodejs git fish vim bash memcached
 RUN pip install --upgrade pip
 RUN pip install six requests websocket-client requests-futures pusherclient socketio_client
 RUN pip install pymemcache
