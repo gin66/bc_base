@@ -15,6 +15,7 @@ RUN apk add curl tmux nodejs git fish vim bash memcached
 RUN pip install --upgrade pip
 RUN pip install six requests websocket-client requests-futures pusherclient socketio_client
 RUN pip install pymemcache
+RUN apk add less
 
 #RUN apk add openjdk8-jre-base-8.92.14-r0
 RUN /usr/sbin/adduser -u 1000 -D jochen
