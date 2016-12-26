@@ -119,7 +119,7 @@ RUN cd /usr/local/bin \
 	&& ln -s python3-config python-config
 #===========================================================================
 
-RUN apk add curl tmux nodejs git fish vim bash memcached less
+RUN apk add curl tmux nodejs git fish vim bash memcached less sqlite3
 RUN pip3 install six requests websocket-client requests-futures pusherclient socketio_client pymemcache
 
 #RUN apk add openjdk8-jre-base-8.92.14-r0
