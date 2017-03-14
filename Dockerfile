@@ -121,6 +121,9 @@ RUN cd /usr/local/bin \
 
 RUN apk add curl tmux nodejs git fish vim bash memcached less sqlite
 RUN pip3 install six requests websocket-client requests-futures pusherclient socketio_client pymemcache
+RUN pip3 install numpy scipy telegram pypng
+
+RUN apk add llvm
 
 #RUN apk add openjdk8-jre-base-8.92.14-r0
 RUN /usr/sbin/adduser -u 1000 -D jochen
