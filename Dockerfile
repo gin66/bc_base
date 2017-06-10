@@ -30,7 +30,7 @@ RUN apk add --no-cache --virtual .fetch-deps \
 		gnupg \
 		openssl \
 		tar \
-		xz \
+		xz
 
 RUN apk add --no-cache --virtual .build-deps  \
 		bzip2-dev \
@@ -49,7 +49,7 @@ RUN apk add --no-cache --virtual .build-deps  \
 		tk \
 		tk-dev \
 		xz-dev \
-		zlib-dev \
+		zlib-dev
 
 # the lapack package is only in the community repository
 RUN echo "http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
