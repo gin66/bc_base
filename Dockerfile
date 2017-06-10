@@ -60,7 +60,7 @@ RUN apk add --no-cache curl tmux nodejs git fish vim bash memcached less sqlite 
             
 RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
 
-RUN python -m ensurepip
+#RUN python -m ensurepip
 RUN pip3 install --upgrade setuptools
 RUN pip3 install six requests websocket-client requests-futures pusherclient socketio_client pymemcache \
                  numpy python-telegram-bot pypng scipy ipython pika amqpstorm pillow tflearn h5py
