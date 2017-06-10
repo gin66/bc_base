@@ -56,7 +56,7 @@ RUN echo "http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/apk/reposit
 RUN apk add --no-cache curl tmux nodejs git fish vim bash memcached less sqlite \
                        llvm clang make gcc automake gfortran musl-dev g++ \
                        lapack-dev freetype-dev mdocml-apropos \
-                       man man-pages jpeg-dev python3
+                       man man-pages jpeg-dev python3 python3-dev
             
 RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
 
