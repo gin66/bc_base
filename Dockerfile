@@ -10,12 +10,10 @@
 
 #===========================================================================
 # This is from official docker python Dockerfile
-FROM alpine:3.4
+FROM alpine:3.6
 
 # not part of official Dockerfile
-RUN apk update
-RUN apk upgrade
-
+RUN apk update && apk upgrade
 
 # ensure local python is preferred over distribution python
 ENV PATH /usr/local/bin:$PATH
@@ -28,28 +26,11 @@ ENV LANG C.UTF-8
 # the other runtime dependencies for Python are installed later
 RUN apk add --no-cache ca-certificates
 
-ENV GPG_KEY 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-ENV PYTHON_VERSION 3.6.0
-
-# if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
-ENV PYTHON_PIP_VERSION 9.0.1
-
-RUN set -ex \
-	&& apk add --no-cache --virtual .fetch-deps \
+RUN        apk add --no-cache --virtual .fetch-deps \
 		gnupg \
 		openssl \
 		tar \
 		xz \
-	\
-	&& wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz" \
-	&& wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc" \
-	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$GPG_KEY" \
-	&& gpg --batch --verify python.tar.xz.asc python.tar.xz \
-	&& rm -r "$GNUPGHOME" python.tar.xz.asc \
-	&& mkdir -p /usr/src/python \
-	&& tar -xJC /usr/src/python --strip-components=1 -f python.tar.xz \
-	&& rm python.tar.xz \
 	\
 	&& apk add --no-cache --virtual .build-deps  \
 		bzip2-dev \
@@ -69,64 +50,27 @@ RUN set -ex \
 		tk-dev \
 		xz-dev \
 		zlib-dev \
-# add build deps before removing fetch deps in case there's overlap
-	&& apk del .fetch-deps \
-	\
-	&& cd /usr/src/python \
-	&& ./configure \
-		--enable-loadable-sqlite-extensions \
-		--enable-shared \
-	&& make -j$(getconf _NPROCESSORS_ONLN) \
-	&& make install \
-	\
-# explicit path to "pip3" to ensure distribution-provided "pip3" cannot interfere
-	&& if [ ! -e /usr/local/bin/pip3 ]; then : \
-		&& wget -O /tmp/get-pip.py 'https://bootstrap.pypa.io/get-pip.py' \
-		&& python3 /tmp/get-pip.py "pip==$PYTHON_PIP_VERSION" \
-		&& rm /tmp/get-pip.py \
-	; fi \
-# we use "--force-reinstall" for the case where the version of pip we're trying to install is the same as the version bundled with Python
-# ("Requirement already up-to-date: pip==8.1.2 in /usr/local/lib/python3.6/site-packages")
-# https://github.com/docker-library/python/pull/143#issuecomment-241032683
-	&& pip3 install --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
-# then we use "pip list" to ensure we don't have more than one pip version installed
-# https://github.com/docker-library/python/pull/100
-	&& [ "$(pip list |tac|tac| awk -F '[ ()]+' '$1 == "pip" { print $2; exit }')" = "$PYTHON_PIP_VERSION" ] \
-	\
-	&& find /usr/local -depth \
-		\( \
-			\( -type d -a -name test -o -name tests \) \
-			-o \
-			\( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
-		\) -exec rm -rf '{}' + \
-	&& runDeps="$( \
-		scanelf --needed --nobanner --recursive /usr/local \
-			| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-			| sort -u \
-			| xargs -r apk info --installed \
-			| sort -u \
-	)" \
-	&& apk add --virtual .python-rundeps $runDeps \
-	&& apk del .build-deps \
-	&& rm -rf /usr/src/python ~/.cache
 
-# make some useful symlinks that are expected to exist
-RUN cd /usr/local/bin \
-	&& { [ -e easy_install ] || ln -s easy_install-* easy_install; } \
-	&& ln -s idle3 idle \
-	&& ln -s pydoc3 pydoc \
-	&& ln -s python3 python \
-	&& ln -s python3-config python-config
-#===========================================================================
+# the lapack package is only in the community repository
+RUN echo "http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+RUN apk add --no-cache curl tmux nodejs git fish vim bash memcached less sqlite \
+                       llvm clang make gcc automake gfortran musl-dev g++ \
+                       lapack-dev freetype-dev mdocml-apropos \
+                       man man-pages jpeg-dev
+            
+RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
 
-RUN apk add curl tmux nodejs git fish vim bash memcached less sqlite
-RUN pip3 install six requests websocket-client requests-futures pusherclient socketio_client pymemcache
-RUN pip3 install numpy scipy telegram pypng
+RUN python -m ensurepip
+RUN pip3 install --upgrade setuptools
+RUN pip3 install six requests websocket-client requests-futures pusherclient socketio_client pymemcache \
+                 numpy python-telegram-bot pypng scipy ipython pika amqpstorm pillow tflearn h5py
+RUN pip3 install https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.1.0-cp36-cp36m-linux_x86_64.whl
 
-RUN apk add llvm
-
-#RUN apk add openjdk8-jre-base-8.92.14-r0
 RUN /usr/sbin/adduser -u 1000 -D jochen
-USER jochen
-WORKDIR /home/jochen/src/bitcoin
+#USER jochen
+#WORKDIR /home/jochen/src/bitcoin
 
+# on ec2 is uid 500
+RUN /usr/sbin/adduser -u 500 -D ec2-user
+USER ec2-user
+WORKDIR /home/ec2-user/src/prob_logic
