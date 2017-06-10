@@ -26,13 +26,13 @@ ENV LANG C.UTF-8
 # the other runtime dependencies for Python are installed later
 RUN apk add --no-cache ca-certificates
 
-RUN        apk add --no-cache --virtual .fetch-deps \
+RUN apk add --no-cache --virtual .fetch-deps \
 		gnupg \
 		openssl \
 		tar \
 		xz \
-	\
-	&& apk add --no-cache --virtual .build-deps  \
+
+RUN apk add --no-cache --virtual .build-deps  \
 		bzip2-dev \
 		gcc \
 		gdbm-dev \
