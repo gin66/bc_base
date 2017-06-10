@@ -7,7 +7,9 @@
 #    sudo docker exec -it btc /usr/bin/tmux 
 #       => ./start.sh
 #    sudo docker exec -it btc /usr/bin/tmux attach 
-
+#
+# runtime on docker hub: >19 minutes
+#
 #===========================================================================
 # This is from official docker python Dockerfile
 FROM alpine:3.6
@@ -62,8 +64,10 @@ RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
 
 RUN pip3 install --upgrade setuptools
 RUN pip3 install six requests websocket-client requests-futures pusherclient socketio_client pymemcache \
-                 numpy python-telegram-bot pypng scipy ipython pika amqpstorm pillow tflearn h5py
+                 numpy python-telegram-bot pypng scipy ipython pika amqpstorm pillow 
 RUN pip3 install https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.1.0-cp36-cp36m-linux_x86_64.whl
+RUN pip3 install tflearn
+#h5py
 
 RUN /usr/sbin/adduser -u 500 -D ec2-user
 RUN /usr/sbin/adduser -u 1000 -D jochen
