@@ -60,17 +60,17 @@ RUN apk add --no-cache curl tmux nodejs git fish vim bash memcached less sqlite 
             
 RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
 
-#RUN python -m ensurepip
-#RUN pip3 install --upgrade setuptools
-#RUN pip3 install six requests websocket-client requests-futures pusherclient socketio_client pymemcache \
-#                 numpy python-telegram-bot pypng scipy ipython pika amqpstorm pillow tflearn h5py
-#RUN pip3 install https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.1.0-cp36-cp36m-linux_x86_64.whl
+RUN pip3 install --upgrade setuptools
+RUN pip3 install six requests websocket-client requests-futures pusherclient socketio_client pymemcache \
+                 numpy python-telegram-bot pypng scipy ipython pika amqpstorm pillow tflearn h5py
+RUN pip3 install https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.1.0-cp36-cp36m-linux_x86_64.whl
 
-#RUN /usr/sbin/adduser -u 1000 -D jochen
+RUN /usr/sbin/adduser -u 500 -D ec2-user
+RUN /usr/sbin/adduser -u 1000 -D jochen
+RUN /usr/sbin/adduser -u 5000 -D jo88ki88
 #USER jochen
 #WORKDIR /home/jochen/src/bitcoin
 
 # on ec2 is uid 500
-#RUN /usr/sbin/adduser -u 500 -D ec2-user
 #USER ec2-user
 #WORKDIR /home/ec2-user/src/prob_logic
