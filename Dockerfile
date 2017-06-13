@@ -12,10 +12,10 @@
 #
 #===========================================================================
 # This is from official docker python Dockerfile
-FROM alpine:3.6
+FROM ubuntu:17.04
 
 # not part of official Dockerfile
-RUN apk update && apk upgrade
+RUN apt-get update && apt-get upgrade
 
 # ensure local python is preferred over distribution python
 ENV PATH /usr/local/bin:$PATH
@@ -26,52 +26,87 @@ ENV LANG C.UTF-8
 
 # install ca-certificates so that HTTPS works consistently
 # the other runtime dependencies for Python are installed later
-RUN apk add --no-cache ca-certificates
+RUN apt-get install -y ca-certificates apt-utils
 
-RUN apk add --no-cache --virtual .fetch-deps \
+RUN apt-get install -y \
 		gnupg \
 		openssl \
-		tar \
-		xz
+		tar
 
-RUN apk add --no-cache --virtual .build-deps  \
-		bzip2-dev \
+RUN apt-get install -y \
+		build-essential \
 		gcc \
-		gdbm-dev \
-		libc-dev \
-		linux-headers \
 		make \
-		ncurses-dev \
-		openssl \
-		openssl-dev \
 		pax-utils \
-		readline-dev \
-		sqlite-dev \
-		tcl-dev \
-		tk \
-		tk-dev \
-		xz-dev \
-		zlib-dev
+		lzma-dev
 
 # the lapack package is only in the community repository
-RUN echo "http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
-RUN apk add --no-cache curl tmux nodejs git fish vim bash memcached less sqlite \
+RUN apt-get install -y curl tmux nodejs git fish vim bash memcached less sqlite \
                        llvm clang make gcc automake gfortran musl-dev g++ \
-                       lapack-dev freetype-dev mdocml-apropos \
-                       man man-pages jpeg-dev python3 python3-dev
-            
-RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
+                       liblapack-dev \
+                       man libjpeg-dev python3.6 python3.6-dev \
+			liblapack-dev
 
+RUN curl -fSsL -O https://bootstrap.pypa.io/get-pip.py && \
+    python3.6 get-pip.py && \
+    rm get-pip.py
+            
 RUN pip3 install --upgrade setuptools
 RUN pip3 install six requests websocket-client requests-futures pusherclient socketio_client pymemcache \
                  numpy python-telegram-bot pypng scipy ipython pika amqpstorm pillow 
-RUN pip3 install https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.1.0-cp36-cp36m-linux_x86_64.whl
+
+RUN apt-get install -y unzip
+
+# Set up Bazel.
+
+# Running bazel inside a `docker build` command causes trouble, cf:
+#   https://github.com/bazelbuild/bazel/issues/134
+# The easiest solution is to set up a bazelrc file forcing --batch.
+RUN echo "startup --batch" >>/etc/bazel.bazelrc
+# Similarly, we need to workaround sandboxing issues:
+#   https://github.com/bazelbuild/bazel/issues/418
+RUN echo "build --spawn_strategy=standalone --genrule_strategy=standalone" \
+    >>/etc/bazel.bazelrc
+# Install the most recent bazel release.
+ENV BAZEL_VERSION 0.5.0
+WORKDIR /
+RUN mkdir /bazel && \
+    cd /bazel && \
+    curl -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36" -fSsL -O https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh && \
+    curl -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36" -fSsL -o /bazel/LICENSE.txt https://raw.githubusercontent.com/bazelbuild/bazel/master/LICENSE && \
+    chmod +x bazel-*.sh && \
+    ./bazel-$BAZEL_VERSION-installer-linux-x86_64.sh && \
+    cd / && \
+    rm -f /bazel/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
+
+# Download and build TensorFlow.
+
+RUN git clone https://github.com/tensorflow/tensorflow.git && \
+    cd tensorflow && \
+    git checkout r1.2
+WORKDIR /tensorflow
+
+# TODO(craigcitro): Don't install the pip package, since it makes it
+# more difficult to experiment with local changes. Instead, just add
+# the built directory to the path.
+
+ENV CI_BUILD_PYTHON python3.6
+
+RUN tensorflow/tools/ci_build/builds/configured CPU \
+    bazel build -c opt --cxxopt="-D_GLIBCXX_USE_CXX11_ABI=0" \
+        tensorflow/tools/pip_package:build_pip_package && \
+    bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/pip && \
+    pip --no-cache-dir install --upgrade /tmp/pip/tensorflow-*.whl && \
+    rm -rf /tmp/pip && \
+    rm -rf /root/.cache
+# Clean up pip wheel and Bazel cache when done.
+#RUN pip3 install https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.1.0-cp36-cp36m-linux_x86_64.whl
 RUN pip3 install tflearn
 #h5py
 
-RUN /usr/sbin/adduser -u 500 -D ec2-user
-RUN /usr/sbin/adduser -u 1000 -D jochen
-RUN /usr/sbin/adduser -u 5000 -D jo88ki88
+RUN /usr/sbin/adduser -u 500 ec2-user
+RUN /usr/sbin/adduser -u 1000 jochen
+RUN /usr/sbin/adduser -u 5000 jo88ki88
 #USER jochen
 #WORKDIR /home/jochen/src/bitcoin
 
