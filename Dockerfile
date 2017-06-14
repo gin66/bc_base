@@ -57,6 +57,9 @@ RUN curl -fSsL -O https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tgz && \
 
 RUN apt-get remove -y python3.5
 
+RUN curl -fSsL -O https://bootstrap.pypa.io/get-pip.py && \
+    python3.6 get-pip.py && \
+    rm get-pip.py
 
 RUN pip3.6 install --upgrade setuptools
 RUN pip3.6 install six requests websocket-client requests-futures \
