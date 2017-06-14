@@ -51,8 +51,6 @@ RUN curl -fSsL -O https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tgz && \
     tar -vxzf Python-3.6.1.tgz && \
     cd Python-3.6.1 && \
     ./configure --enable-optimizations \
-                --enable-loadable-sqlite-extensions \
-    		--enable-shared \
                 --without-ensurepip && \
     make -j4 && \
     make install
