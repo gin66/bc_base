@@ -43,15 +43,22 @@ RUN apt-get install -y curl tmux nodejs git fish vim bash memcached less sqlite 
                        llvm clang make gcc automake gfortran musl-dev g++ \
                        liblapack-dev \
                        man libjpeg-dev \
-                       libssl-dev
+                       libssl-dev libbz2-dev libc6-dev libgdbm-dev libncurses-dev \
+                       libreadline-dev libsqlite3-dev
 
 WORKDIR /root
 RUN curl -fSsL -O https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tgz && \
     tar -vxzf Python-3.6.1.tgz && \
     cd Python-3.6.1 && \
-    ./configure --enable-optimizations && \
+    ./configure --enable-optimizations \
+                --enable-loadable-sqlite-extensions \
+    		--enable-shared \
+                --without-ensurepip && \
     make -j4 && \
     make install
+
+RUN apt-get remove -y python3.5
+
 
 RUN pip3.6 install --upgrade setuptools
 RUN pip3.6 install six requests websocket-client requests-futures \
