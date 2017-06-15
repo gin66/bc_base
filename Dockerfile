@@ -39,7 +39,7 @@ RUN apt-get install -y \
 		lzma-dev
 
 # the lapack package is only in the community repository
-RUN apt-get install -y curl tmux nodejs git fish vim bash memcached less sqlite \
+RUN apt-get install -y curl tmux nodejs git vim bash memcached less sqlite \
                        llvm clang make gcc automake gfortran musl-dev g++ \
                        liblapack-dev \
                        man libjpeg-dev \
