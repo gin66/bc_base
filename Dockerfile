@@ -52,7 +52,7 @@ RUN pip3.6 install six requests websocket-client requests-futures \
                  numpy python-telegram-bot pypng scipy ipython \
                  pika amqpstorm pillow 
 
-ENV TENSORFLOW_VERSION 0.12.1
+ENV TENSORFLOW_VERSION 1.1.0
 
 RUN pip3.6 --no-cache-dir install \
     	https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl
