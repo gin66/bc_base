@@ -10,7 +10,7 @@
 #
 #===========================================================================
 # This is from official docker python Dockerfile
-FROM tensorflow/tensorflow:latest
+FROM python:3.6
 
 # not part of official Dockerfile
 RUN apt-get update && apt-get -y upgrade
@@ -44,22 +44,7 @@ RUN apt-get install -y curl tmux nodejs git fish vim bash memcached less sqlite 
                        liblapack-dev \
                        man libjpeg-dev \
                        libssl-dev libbz2-dev libc6-dev libgdbm-dev libncurses-dev \
-                       libreadline-dev libsqlite3-dev
-
-WORKDIR /root
-RUN curl -fSsL -O https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tgz && \
-    tar -vxzf Python-3.6.1.tgz && \
-    cd Python-3.6.1 && \
-    ./configure --enable-optimizations \
-                --without-ensurepip && \
-    make -j4 && \
-    make install
-
-RUN apt-get remove -y python3.5
-
-RUN curl -fSsL -O https://bootstrap.pypa.io/get-pip.py && \
-    python3.6 get-pip.py && \
-    rm get-pip.py
+                       libreadline-dev libsqlite3-dev unzip
 
 RUN pip3.6 install --upgrade setuptools
 RUN pip3.6 install six requests websocket-client requests-futures \
@@ -67,7 +52,10 @@ RUN pip3.6 install six requests websocket-client requests-futures \
                  numpy python-telegram-bot pypng scipy ipython \
                  pika amqpstorm pillow 
 
-RUN apt-get install -y unzip
+ENV TENSORFLOW_VERSION 0.12.1
+
+RUN pip3.6 --no-cache-dir install \
+    	https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl
 
 RUN pip3.6 install tflearn
 #h5py
