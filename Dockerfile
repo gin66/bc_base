@@ -38,7 +38,6 @@ RUN apt-get install -y \
 		pax-utils \
 		lzma-dev
 
-# the lapack package is only in the community repository
 RUN apt-get install -y curl tmux nodejs git vim bash memcached less sqlite \
                        llvm clang make gcc automake gfortran musl-dev g++ \
                        liblapack-dev \
@@ -50,7 +49,7 @@ RUN pip3.6 install --upgrade setuptools
 RUN pip3.6 install six requests websocket-client requests-futures \
                  pusherclient socketio_client pymemcache \
                  numpy python-telegram-bot pypng scipy ipython \
-                 pika amqpstorm pillow h5py
+                 pika amqpstorm pillow h5py celery flower
 
 ENV TENSORFLOW_VERSION 1.1.0
 
