@@ -18,9 +18,15 @@ RUN pip3.6 install six requests websocket-client requests-futures \
                  numpy python-telegram-bot pypng scipy ipython \
                  pika amqpstorm pillow h5py celery flower
 
-RUN wget -o /tmp/p.tbz https://bitbucket.org/pypy/pypy/downloads/pypy3-v5.8.0-linux64.tar.bz2; \
+RUN apt-get install pypy-dev
+
+RUN wget -O /tmp/p.tbz https://bitbucket.org/pypy/pypy/downloads/pypy3-v5.8.0-linux64.tar.bz2; \
     tar -C /usr/local -xjf /tmp/p.tbz; \
-    rm /tmp/p.tbz
+    rm /tmp/p.tbz; \
+    /usr/local/pypy3-v5.8.0-linux64/bin/pypy3 -m ensurepip; \
+    /usr/local/pypy3-v5.8.0-linux64/bin/pypy3 -m pip install -U wheel; \
+    /usr/local/pypy3-v5.8.0-linux64/bin/pip3 install cython numpy pika pysha3; \
+    ln -s /usr/local/pypy3-v5.8.0-linux64/bin/* /usr/bin
 
 #ENV TENSORFLOW_VERSION 1.1.0
 #
