@@ -10,40 +10,7 @@
 #
 #===========================================================================
 # This is from official docker python Dockerfile
-FROM python:3.6
-
-# not part of official Dockerfile
-RUN apt-get update && apt-get -y upgrade
-
-# ensure local python is preferred over distribution python
-ENV PATH /usr/local/bin:$PATH
-
-# http://bugs.python.org/issue19846
-# > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
-ENV LANG C.UTF-8
-
-# install ca-certificates so that HTTPS works consistently
-# the other runtime dependencies for Python are installed later
-RUN apt-get install -y ca-certificates apt-utils
-
-RUN apt-get install -y \
-		gnupg \
-		openssl \
-		tar
-
-RUN apt-get install -y \
-		build-essential \
-		gcc \
-		make \
-		pax-utils \
-		lzma-dev
-
-RUN apt-get install -y curl tmux nodejs git vim bash memcached less sqlite \
-                       llvm clang make gcc automake gfortran musl-dev g++ \
-                       liblapack-dev \
-                       man libjpeg-dev \
-                       libssl-dev libbz2-dev libc6-dev libgdbm-dev libncurses-dev \
-                       libreadline-dev libsqlite3-dev unzip
+FROM gin66/bc_base:debian-base
 
 RUN pip3.6 install --upgrade setuptools
 RUN pip3.6 install six requests websocket-client requests-futures \
@@ -51,12 +18,16 @@ RUN pip3.6 install six requests websocket-client requests-futures \
                  numpy python-telegram-bot pypng scipy ipython \
                  pika amqpstorm pillow h5py celery flower
 
-ENV TENSORFLOW_VERSION 1.1.0
+RUN wget -o /tmp/p.tbz https://bitbucket.org/pypy/pypy/downloads/pypy3-v5.8.0-linux64.tar.bz2; \
+    tar -C /usr/local -xjf /tmp/p.tbz; \
+    rm /tmp/p.tbz
 
-RUN pip3.6 --no-cache-dir install \
-    	https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl
-
-RUN pip3.6 install tflearn
+#ENV TENSORFLOW_VERSION 1.1.0
+#
+#RUN pip3.6 --no-cache-dir install \
+#    	https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl
+#
+#RUN pip3.6 install tflearn
 
 RUN /usr/sbin/adduser --disabled-login --uid 500 ec2-user
 RUN /usr/sbin/adduser --disabled-login --uid 1000 jochen
