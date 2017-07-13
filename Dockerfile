@@ -18,7 +18,7 @@ RUN pip3.6 install six requests websocket-client requests-futures \
                  numpy python-telegram-bot pypng scipy ipython \
                  pika amqpstorm pillow h5py celery flower
 
-RUN apt-get install pypy-dev
+RUN apt-get install -y pypy-dev
 
 RUN wget -O /tmp/p.tbz https://bitbucket.org/pypy/pypy/downloads/pypy3-v5.8.0-linux64.tar.bz2; \
     tar -C /usr/local -xjf /tmp/p.tbz; \
