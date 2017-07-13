@@ -45,21 +45,3 @@ RUN apt-get install -y curl tmux nodejs git vim bash memcached less sqlite \
                        libssl-dev libbz2-dev libc6-dev libgdbm-dev libncurses-dev \
                        libreadline-dev libsqlite3-dev unzip
 
-RUN pip3.6 install --upgrade setuptools
-RUN pip3.6 install six requests websocket-client requests-futures \
-                 pusherclient socketio_client pymemcache \
-                 numpy python-telegram-bot pypng scipy ipython \
-                 pika amqpstorm pillow h5py celery flower
-
-ENV TENSORFLOW_VERSION 1.1.0
-
-RUN pip3.6 --no-cache-dir install \
-    	https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl
-
-RUN pip3.6 install tflearn
-
-RUN /usr/sbin/adduser --disabled-login --uid 500 ec2-user
-RUN /usr/sbin/adduser --disabled-login --uid 1000 jochen
-RUN /usr/sbin/adduser --disabled-login --uid 5000 jo88ki88
-WORKDIR /home
-
