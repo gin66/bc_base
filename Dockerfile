@@ -24,7 +24,7 @@ RUN pip3.6 --no-cache-dir install \
     	https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-${TENSORFLOW_VERSION}-cp36-cp36m-linux_x86_64.whl
 
 RUN pip3.6 install tflearn
-RUN pip3.6 install keras sqlite_objects
+RUN pip3.6 install keras sqlite_object
 
 RUN /usr/sbin/adduser --disabled-login --uid 500 ec2-user
 RUN /usr/sbin/adduser --disabled-login --uid 1000 jochen
